@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+:root {
+  --osrs-yellow: #FFCF3F;
+  --osrs-gold: #E6A519;
+  --osrs-brown: #694D23;
+  --osrs-dark-brown: #382D1A;
+  --osrs-black: #0F0F0F;
+  --osrs-green: #00FF00;
+  --osrs-red: #FF0000;
+  --osrs-blue: #0088FF;
+  --osrs-chat: #00FFFF;
+  --osrs-background: #2E2C29;
+  --osrs-border: #474745;
+  --osrs-panel: #46433A;
+}

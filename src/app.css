@@ -14,3 +14,18 @@
   --osrs-border: #474745;
   --osrs-panel: #46433A;
 }
+
+.aspect-square:hover {
+  /* outlineWidth: "2px",
+                    outlineColor: "#000000" */
+  /* outline: 2px solid var(--osrs-border); */
+  /* outline-offset: 2px; */
+}
+
+.or {
+  font-weight: bold;
+  text-decoration: underline;
+  color:white;
+  font-style: italic;
+  list-style-type: none;
+}

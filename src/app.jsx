@@ -8,6 +8,49 @@ const App = () => {
   const [hoveredSquare, setHoveredSquare] = useState(null);
   const gridRef = useRef(null);
 
+  // Load state from URL on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const stateParam = params.get('state');
+    
+    if (stateParam) {
+      try {
+        const bits = parseInt(stateParam, 16);
+        const newSet = new Set();
+        
+        for (let i = 0; i < bingoItems.length; i++) {
+          if (bits & (1 << i)) {
+            newSet.add(i);
+          }
+        }
+        
+        setClickedSquares(newSet);
+      } catch (error) {
+        console.error('Error parsing state from URL:', error);
+      }
+    }
+  }, []);
+
+  // Update URL when state changes
+  useEffect(() => {
+    let bits = 0;
+    
+    clickedSquares.forEach(index => {
+      bits |= (1 << index);
+    });
+    
+    const hexState = bits.toString(16);
+    const url = new URL(window.location);
+    
+    if (bits > 0) {
+      url.searchParams.set('state', hexState);
+    } else {
+      url.searchParams.delete('state');
+    }
+    
+    window.history.replaceState({}, '', url);
+  }, [clickedSquares]);
+
   const bingoItems = [
   {
     title: "Venomous Jeweler",

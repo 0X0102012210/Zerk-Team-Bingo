@@ -152,11 +152,11 @@ const App = () => {
     title: "Hellhound's Heels",
     text: (
       <ul>
-        <li>Pegasian crystal + Ranger boots</li>
+        <li>Pegasian crystal</li><li>Ranger boots</li>
         <li className="or">OR</li>
-        <li>Eternal crystal + Infinity boots</li>
+        <li>Eternal crystal</li><li>Infinity boots</li>
         <li className="or">OR</li>
-        <li>Primordial crystal + Dragon boots</li>
+        <li>Primordial crystal</li><li>Dragon boots</li>
       </ul>
     ),
   },
@@ -173,11 +173,11 @@ const App = () => {
     title: "Risk Assessment",
     text: (
       <ul>
-        <li>Craw's bow + Fangs of venenatis</li>
+        <li>Craw's bow</li><li>Fangs of venenatis</li>
         <li className="or">OR</li>
-        <li>Viggora's chainmace + Claws of callisto</li>
+        <li>Viggora's chainmace</li><li>Claws of callisto</li>
         <li className="or">OR</li>
-        <li>Thammaron's sceptre + Skull of vet'ion</li>
+        <li>Thammaron's sceptre</li><li>Skull of vet'ion</li>
       </ul>
     ),
   },

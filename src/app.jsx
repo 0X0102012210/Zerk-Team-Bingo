@@ -1,352 +1,421 @@
 import { useEffect, useRef, useState } from "react";
 import { Download } from "lucide-react";
-import html2canvas from "html2canvas";
-import './app.css'
+import "./app.css";
 
 const App = () => {
   const [clickedSquares, setClickedSquares] = useState(new Set());
   const [hoveredSquare, setHoveredSquare] = useState(null);
   const [isRolling, setIsRolling] = useState(false);
   const [selectedTile, setSelectedTile] = useState(null);
+  const [swapTile1, setSwapTile1] = useState("");
+  const [swapTile2, setSwapTile2] = useState("");
   const gridRef = useRef(null);
   const rollIntervalRef = useRef(null);
 
-  // Load state from URL on mount
+  const bingoItems = [
+    {
+      index: 1, image: './tiles/tile1.png',
+      title: "Venomous Jeweler",
+      text: (
+        <ul>
+          <li>Araxyte fang</li>
+          <li>Onyx</li>
+          <li>Zenyte shard</li>
+        </ul>
+      ),
+    },
+    {
+      index: 2, image: './tiles/tile2.png',
+      title: "Catch These Hands",
+      text: (
+        <ul>
+          <li>Mokhaiotl cloth</li>
+          <li>Onyx</li>
+          <li>Zenyte shard</li>
+        </ul>
+      ),
+    },
+    {
+      index: 3, image: './tiles/tile3.png',
+      title: "Demonic Arsenal",
+      text: (
+        <ul>
+          <li>Any abyssal weapon</li>
+          <li>Tormented synapse</li>
+          <li>Eye of ayak</li>
+        </ul>
+      ),
+    },
+    {
+      index: 4, image: './tiles/tile4.png',
+      title: "Eternal Love",
+      text: (
+        <ul>
+          <li>Imbued heart</li>
+          <li className="or">OR</li>
+          <li>Eternal gem</li>
+        </ul>
+      ),
+    },
+    {
+      index: 5, image: './tiles/tile5.png',
+      title: "Triple Double",
+      text: (
+        <ul>
+          <li>Tonalztics of ralos</li>
+          <li>Dark bow</li>
+          <li>Fire element staff crown</li>
+          <li>Ice element staff crown</li>
+        </ul>
+      ),
+    },
+    {
+      index: 6, image: './tiles/tile6.png',
+      title: "Ranged Fortification",
+      text: (
+        <ul>
+          <li>Masori armor piece</li>
+          <li>Armadyl armor piece</li>
+        </ul>
+      ),
+    },
+    {
+      index: 7, image: './tiles/tile7.png',
+      title: "Melee Fortification",
+      text: (
+        <ul>
+          <li>Torva armor piece</li>
+          <li>Bandos armor piece (excluding Bandos boots)</li>
+        </ul>
+      ),
+    },
+    {
+      index: 8, image: './tiles/tile8.png',
+      title: "What Was That?",
+      text: (
+        <ul>
+          <li>Bandos boots</li>
+          <li>Black tourmaline core</li>
+          <li>Echo crystal</li>
+        </ul>
+      ),
+    },
+    {
+      index: 9, image: './tiles/tile9.png',
+      title: "The Lizard Sticker",
+      text: (
+        <ul>
+          <li>Zamorakian spear</li>
+          <li>Hydra's claw</li>
+        </ul>
+      ),
+    },
+    {
+      index: 10, image: './tiles/tile10.png',
+      title: "Theatre of Blood",
+      text: (
+        <ul>
+          <li>2 purples from Theatre of Blood</li>
+        </ul>
+      ),
+    },
+    {
+      index: 11, image: './tiles/tile11.png',
+      title: "Hellhound's Heels",
+      text: (
+        <ul>
+          <li>Pegasian crystal</li>
+          <li>Ranger boots</li>
+          <li className="or">OR</li>
+          <li>Eternal crystal</li>
+          <li>Infinity boots</li>
+          <li className="or">OR</li>
+          <li>Primordial crystal</li>
+          <li>Dragon boots</li>
+        </ul>
+      ),
+    },
+    {
+      index: 12, image: './tiles/tile12.png',
+      title: "Lord of the Bling",
+      text: (
+        <ul>
+          <li>DT2 Vestige</li>
+          <li>Matching DK ring</li>
+        </ul>
+      ),
+    },
+    {
+      index: 13, image: './tiles/tile13.png',
+      title: "Risk Assessment",
+      text: (
+        <ul>
+          <li>Craw's bow</li>
+          <li>Fangs of venenatis</li>
+          <li className="or">OR</li>
+          <li>Viggora's chainmace</li>
+          <li>Claws of callisto</li>
+          <li className="or">OR</li>
+          <li>Thammaron's sceptre</li>
+          <li>Skull of vet'ion</li>
+        </ul>
+      ),
+    },
+    {
+      index: 14, image: './tiles/tile14.png',
+      title: "Lesser of Two Evils",
+      text: (
+        <ul>
+          <li>Nightmare unique</li>
+          <li className="or">OR</li>
+          <li>Yama unique</li>
+        </ul>
+      ),
+    },
+    {
+      index: 15, image: './tiles/tile15.png',
+      title: "Chambers of Xeric",
+      text: (
+        <ul>
+          <li>2 purples from Chambers of Xeric</li>
+        </ul>
+      ),
+    },
+    {
+      index: 16, image: './tiles/tile16.png',
+      title: "Toxic Relationship",
+      text: (
+        <ul>
+          <li>Staff of the dead</li>
+          <li>Magic fang</li>
+        </ul>
+      ),
+    },
+    {
+      index: 17, image: './tiles/tile17.png',
+      title: "Who Sharded?",
+      text: (
+        <ul>
+          <li>Any Godsword hilt</li>
+          <li>3 unique Godsword shards</li>
+        </ul>
+      ),
+    },
+    {
+      index: 18, image: './tiles/tile18.png',
+      title: "Plunderin' Booty",
+      text: (
+        <ul>
+          <li>Tiny pearl</li>
+          <li>Ray barbs</li>
+          <li>Swift albatross feather</li>
+          <li>Echo pearl</li>
+          <li>Narwhal horn</li>
+          <li>Dragon metal sheet</li>
+          <li>Dragon nails</li>
+        </ul>
+      ),
+    },
+    {
+      index: 19, image: './tiles/tile19.png',
+      title: "Elemental Elegance",
+      text: (
+        <ul>
+          <li>Tome of fire</li>
+          <li>Tome of water</li>
+          <li>Tome of earth</li>
+        </ul>
+      ),
+    },
+    {
+      index: 20, image: './tiles/tile20.png',
+      title: "Tombs of Amascut",
+      text: (
+        <ul>
+          <li>2 purples from Tombs of Amascut</li>
+        </ul>
+      ),
+    },
+    {
+      index: 21, image: './tiles/tile21.png',
+      title: "Weaponized Moontism",
+      text: (
+        <ul>
+          <li>Dual macuahuitl</li>
+          <li>Eclipse atlatl</li>
+          <li>Blue moon spear</li>
+        </ul>
+      ),
+    },
+    {
+      index: 22, image: './tiles/tile22.png',
+      title: "Phantom Dancer",
+      text: (
+        <ul>
+          <li>3 Venator shards</li>
+        </ul>
+      ),
+    },
+    {
+      index: 23, image: './tiles/tile23.png',
+      title: "Gryphon Tamer",
+      text: (
+        <ul>
+          <li>Belle's folly</li>
+        </ul>
+      ),
+    },
+    {
+      index: 24, image: './tiles/tile24.png',
+      title: "Skills Master",
+      text: (
+        <ul>
+          <li style={{ color: "white" }}>Choose 3:</li>
+          <li>Fletching knife</li>
+          <li>Tackle box</li>
+          <li>Fish barrel</li>
+          <li>Bruma torch</li>
+          <li>Strange old lockpick</li>
+          <li>Imcando hammer</li>
+        </ul>
+      ),
+    },
+    {
+      index: 25, image: './tiles/tile25.png',
+      title: "Bob Ross",
+      text: (
+        <ul>
+          <li>3 tradeable boat paints (excluding Merchant's paint)</li>
+        </ul>
+      ),
+    },
+    {
+      index: 26, image: './tiles/tile26.png',
+      title: "Brothers Brawl",
+      text: (
+        <ul>
+          <li>Full set of Barrows armor (any helm/chest/legs)</li>
+        </ul>
+      ),
+    },
+    {
+      index: 27, image: './tiles/tile27.png',
+      title: "King of the Rats",
+      text: (
+        <ul>
+          <li>Brine sabre</li>
+          <li>3 Scurrius' spines</li>
+        </ul>
+      ),
+    },
+    {
+      index: 28, image: './tiles/tile28.png',
+      title: "Freaky Forester",
+      text: (
+        <ul>
+          <li>Golden pheasant egg</li>
+          <li>Fox whistle</li>
+        </ul>
+      ),
+    },
+    {
+      index: 29, image: './tiles/tile29.png',
+      title: "Medieval Meleer",
+      text: (
+        <ul>
+          <li>Sulphur blades</li>
+          <li>Glacial temotli</li>
+          <li>Earthbound tecpatl</li>
+        </ul>
+      ),
+    },
+    {
+      index: 30, image: './tiles/tile30.png',
+      title: "FeelsBadMan",
+      text: (
+        <ul>
+          <li>Champion scroll</li>
+          <li>Curved bone</li>
+          <li>Long bone</li>
+        </ul>
+      ),
+    }
+  ];
+
+  const [tiles, setTiles] = useState(bingoItems);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const stateParam = params.get('state');
-    
+    const stateParam = params.get("state");
+    const swap1Param = params.get("swap1");
+    const swap2Param = params.get("swap2");
+
     if (stateParam) {
       try {
         const bits = parseInt(stateParam, 16);
         const newSet = new Set();
-        
+
         for (let i = 0; i < bingoItems.length; i++) {
           if (bits & (1 << i)) {
             newSet.add(i);
           }
         }
-        
+
         setClickedSquares(newSet);
       } catch (error) {
-        console.error('Error parsing state from URL:', error);
+        console.error("Error parsing state from URL:", error);
+      }
+    }
+
+    if (swap1Param) setSwapTile1(swap1Param);
+    if (swap2Param) setSwapTile2(swap2Param);
+
+    // Apply swap from URL params
+    if (swap1Param && swap2Param) {
+      const idx1 = parseInt(swap1Param) - 1;
+      const idx2 = parseInt(swap2Param) - 1;
+
+      if (
+        !isNaN(idx1) && !isNaN(idx2) && idx1 >= 0 && idx1 < bingoItems.length &&
+        idx2 >= 0 && idx2 < bingoItems.length && idx1 !== idx2
+      ) {
+        const newTiles = [...bingoItems];
+        [newTiles[idx1], newTiles[idx2]] = [newTiles[idx2], newTiles[idx1]];
+        setTiles(newTiles);
       }
     }
   }, []);
 
-  // Update URL when state changes
   useEffect(() => {
     let bits = 0;
-    
-    clickedSquares.forEach(index => {
-      bits |= (1 << index);
+
+    clickedSquares.forEach((index) => {
+      bits |= 1 << index;
     });
-    
+
     const hexState = bits.toString(16);
     const url = new URL(window.location);
-    
-    if (bits > 0) {
-      url.searchParams.set('state', hexState);
-    } else {
-      url.searchParams.delete('state');
-    }
-    
-    window.history.replaceState({}, '', url);
-  }, [clickedSquares]);
 
-  const bingoItems = [
-  {
-    title: "Venomous Jeweler",
-    text: (
-      <ul>
-        <li>Araxyte fang</li>
-        <li>Onyx</li>
-        <li>Zenyte shard</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Catch These Hands",
-    text: (
-      <ul>
-        <li>Mokhaiotl cloth</li>
-        <li>Onyx</li>
-        <li>Zenyte shard</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Demonic Arsenal",
-    text: (
-      <ul>
-        <li>Any abyssal weapon</li>
-        <li>Tormented synapse</li>
-        <li>Eye of ayak</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Eternal Love",
-    text: (
-      <ul>
-        <li>Imbued heart</li>
-        <li className="or">OR</li>
-        <li>Eternal gem</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Triple Double",
-    text: (
-      <ul>
-        <li>Tonalztics of ralos</li>
-        <li>Dark bow</li>
-        <li>Fire element staff crown</li>
-        <li>Ice element staff crown</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Ranged Fortification",
-    text: (
-      <ul>
-        <li>Masori armor piece</li>
-        <li>Armadyl armor piece</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Melee Fortification",
-    text: (
-      <ul>
-        <li>Torva armor piece</li>
-        <li>Bandos armor piece (excluding Bandos boots)</li>
-      </ul>
-    ),
-  },
-  {
-    title: "What Was That?",
-    text: (
-      <ul>
-        <li>Bandos boots</li>
-        <li>Black tourmaline core</li>
-        <li>Echo crystal</li>
-      </ul>
-    ),
-  },
-  {
-    title: "The Lizard Sticker",
-    text: (
-      <ul>
-        <li>Zamorakian spear</li>
-        <li>Hydra's claw</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Theatre of Blood",
-    text: (
-      <ul>
-        <li>2 purples from Theatre of Blood</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Hellhound's Heels",
-    text: (
-      <ul>
-        <li>Pegasian crystal</li><li>Ranger boots</li>
-        <li className="or">OR</li>
-        <li>Eternal crystal</li><li>Infinity boots</li>
-        <li className="or">OR</li>
-        <li>Primordial crystal</li><li>Dragon boots</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Lord of the Bling",
-    text: (
-      <ul>
-        <li>DT2 Vestige</li>
-        <li>Matching DK ring</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Risk Assessment",
-    text: (
-      <ul>
-        <li>Craw's bow</li><li>Fangs of venenatis</li>
-        <li className="or">OR</li>
-        <li>Viggora's chainmace</li><li>Claws of callisto</li>
-        <li className="or">OR</li>
-        <li>Thammaron's sceptre</li><li>Skull of vet'ion</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Lesser of Two Evils",
-    text: (
-      <ul>
-        <li>Nightmare unique</li>
-        <li className="or">OR</li>
-        <li>Yama unique</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Chambers of Xeric",
-    text: (
-      <ul>
-        <li>2 purples from Chambers of Xeric</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Toxic Relationship",
-    text: (
-      <ul>
-        <li>Staff of the dead</li>
-        <li>Magic fang</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Who Sharded?",
-    text: (
-      <ul>
-        <li>Any Godsword hilt</li>
-        <li>3 unique Godsword shards</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Plunderin' Booty",
-    text: (
-      <ul>
-        <li>Tiny pearl</li>
-        <li>Ray barbs</li>
-        <li>Swift albatross feather</li>
-        <li>Echo pearl</li>
-        <li>Narwhal horn</li>
-        <li>Dragon metal sheet</li>
-        <li>Dragon nails</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Elemental Elegance",
-    text: (
-      <ul>
-        <li>Tome of fire</li>
-        <li>Tome of water</li>
-        <li>Tome of earth</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Tombs of Amascut",
-    text: (
-      <ul>
-        <li>2 purples from Tombs of Amascut</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Weaponized Moontism",
-    text: (
-      <ul>
-        <li>Dual macuahuitl</li>
-        <li>Eclipse atlatl</li>
-        <li>Blue moon spear</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Phantom Dancer",
-    text: (
-      <ul>
-        <li>3 Venator shards</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Gryphon Tamer",
-    text: (
-      <ul>
-        <li>Belle's folly</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Skills Master",
-    text: (
-      <ul>
-        <li style={{color:'white'}}>Choose 3:</li>
-        <li>Fletching knife</li>
-        <li>Tackle box</li>
-        <li>Fish barrel</li>
-        <li>Bruma torch</li>
-        <li>Strange old lockpick</li>
-        <li>Imcando hammer</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Bob Ross",
-    text: (
-      <ul>
-        <li>3 tradeable boat paints (excluding Merchant's paint)</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Brothers Brawl",
-    text: (
-      <ul>
-        <li>Full set of Barrows armor (any helm/chest/legs)</li>
-      </ul>
-    ),
-  },
-  {
-    title: "King of the Rats",
-    text: (
-      <ul>
-        <li>Brine sabre</li>
-        <li>3 Scurrius' spines</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Freaky Forester",
-    text: (
-      <ul>
-        <li>Golden pheasant egg</li>
-        <li>Fox whistle</li>
-      </ul>
-    ),
-  },
-  {
-    title: "Medieval Meleer",
-    text: (
-      <ul>
-        <li>Sulphur blades</li>
-        <li>Glacial temotli</li>
-        <li>Earthbound tecpatl</li>
-      </ul>
-    ),
-  },
-  {
-    title: "FeelsBadMan",
-    text: (
-      <ul>
-        <li>Champion scroll</li>
-        <li>Curved bone</li>
-        <li>Long bone</li>
-      </ul>
-    ),
-  },
-];
+    if (bits > 0) {
+      url.searchParams.set("state", hexState);
+    } else {
+      url.searchParams.delete("state");
+    }
+
+    if (swapTile1) {
+      url.searchParams.set("swap1", swapTile1);
+    } else {
+      url.searchParams.delete("swap1");
+    }
+
+    if (swapTile2) {
+      url.searchParams.set("swap2", swapTile2);
+    } else {
+      url.searchParams.delete("swap2");
+    }
+
+    window.history.replaceState({}, "", url);
+  }, [clickedSquares, swapTile1, swapTile2]);
 
   const toggleSquare = (index) => {
     setClickedSquares((prev) => {
@@ -360,18 +429,58 @@ const App = () => {
     });
   };
 
+  const handleSwapInput = (value, inputNumber) => {
+    if (inputNumber === 1) {
+      setSwapTile1(value);
+      if (value && swapTile2) {
+        performSwap(value, swapTile2);
+      }
+    } else {
+      setSwapTile2(value);
+      if (swapTile1 && value) {
+        performSwap(swapTile1, value);
+      }
+    }
+  };
+
+  const performSwap = (val1, val2) => {
+    const idx1 = parseInt(val1) - 1;
+    const idx2 = parseInt(val2) - 1;
+
+    if (
+      isNaN(idx1) || isNaN(idx2) || idx1 < 0 || idx1 >= bingoItems.length ||
+      idx2 < 0 || idx2 >= bingoItems.length
+    ) {
+      return;
+    }
+
+    if (idx1 === idx2) {
+      return;
+    }
+
+    // Always swap from the base bingoItems array
+    const newTiles = [...bingoItems];
+    [newTiles[idx1], newTiles[idx2]] = [newTiles[idx2], newTiles[idx1]];
+    setTiles(newTiles);
+    console.log(newTiles)
+  };
+
   const saveAsImage = async () => {
     if (!gridRef.current) return;
 
     try {
-      const canvas = await html2canvas(gridRef.current, {
-        backgroundColor: "#0F0F0F",
-        scale: 2,
-        logging: false,
-      });
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const rect = gridRef.current.getBoundingClientRect();
+
+      canvas.width = rect.width * 2;
+      canvas.height = rect.height * 2;
+
+      ctx.fillStyle = "#0F0F0F";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const link = document.createElement("a");
-      link.download = "osrs-bingo.png";
+      link.download = "zerk-team-bingo.png";
       link.href = canvas.toDataURL("image/png");
       link.click();
     } catch (error) {
@@ -381,10 +490,9 @@ const App = () => {
   };
 
   const rollRandomTile = () => {
-    // Get all uncompleted tiles
-    const uncompletedTiles = bingoItems
+    const uncompletedTiles = tiles
       .map((_, index) => index)
-      .filter(index => !clickedSquares.has(index));
+      .filter((index) => !clickedSquares.has(index));
 
     if (uncompletedTiles.length === 0) {
       alert("All tiles are already completed!");
@@ -400,15 +508,17 @@ const App = () => {
 
     const roll = () => {
       rollCount++;
-      
-      const randomIndex = uncompletedTiles[Math.floor(Math.random() * uncompletedTiles.length)];
+
+      const randomIndex =
+        uncompletedTiles[Math.floor(Math.random() * uncompletedTiles.length)];
       setSelectedTile(randomIndex);
       setHoveredSquare(randomIndex);
 
       if (rollCount >= maxRolls) {
         clearInterval(rollIntervalRef.current);
-        
-        const finalTile = uncompletedTiles[Math.floor(Math.random() * uncompletedTiles.length)];
+
+        const finalTile =
+          uncompletedTiles[Math.floor(Math.random() * uncompletedTiles.length)];
         setSelectedTile(finalTile);
         setHoveredSquare(finalTile);
         setIsRolling(false);
@@ -444,24 +554,39 @@ const App = () => {
               borderWidth: "4px",
               borderColor: "#694D23",
               borderStyle: "solid",
-              background: "url(./board.png)",
-              backgroundSize: "contain",
+              gap: "0.25rem",
+              padding: "0.25rem",
             }}
           >
-            {bingoItems.map((item, index) => {
+            {tiles.map((item, index) => {
               const isClicked = clickedSquares.has(index);
 
               return (
                 <div
                   key={index}
-                  className="relative aspect-square cursor-pointer transition-all"
+                  className="relative aspect-square cursor-pointer transition-all flex items-center justify-center"
                   style={{
                     borderWidth: "2px",
-                    borderColor: isClicked ? "#E6A519" : (selectedTile === index) ? "#FF0000" : "transparent",
+                    borderColor: isClicked
+                      ? "#E6A519"
+                      : (selectedTile === index)
+                      ? "#FF0000"
+                      : "#474745",
                     borderStyle: "solid",
-                    boxShadow: (selectedTile === index) ? "0 0 20px #FF0000" : "none",
-                    transform: (selectedTile === index && isRolling) ? "scale(1.1)" : "scale(1)",
-                    zIndex: (selectedTile === index && isRolling) ? "2" : "unset",
+                    boxShadow: (selectedTile === index)
+                      ? "0 0 20px #FF0000"
+                      : "none",
+                    transform: (selectedTile === index && isRolling)
+                      ? "scale(1.1)"
+                      : "scale(1)",
+                    zIndex: (selectedTile === index && isRolling)
+                      ? "2"
+                      : "unset",
+                    backgroundColor: "#46433A",
+                    backgroundImage: "url('" + item.image + "')",
+                    backgroundSize: "min(60%, 60px) auto",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "center center",
                   }}
                   onClick={() => toggleSquare(index)}
                   onMouseEnter={(e) => {
@@ -476,11 +601,20 @@ const App = () => {
                     if (!isRolling) {
                       setHoveredSquare(null);
                       if (!isClicked) {
-                        e.currentTarget.style.borderColor = "transparent";
+                        e.currentTarget.style.borderColor = "#474745";
                       }
                     }
                   }}
                 >
+                  <div
+                    className="absolute top-1 left-1 text-s font-bold"
+                    style={{
+                      color: "#FFCF3F",
+                      textShadow: "2px 2px 0px black",
+                    }}
+                  >
+                    {item.index}
+                  </div>
                   {isClicked && (
                     <div
                       className="absolute inset-0 flex items-center justify-center"
@@ -516,17 +650,17 @@ const App = () => {
                       textShadow: "2px 2px 0px black",
                     }}
                   >
-                    {bingoItems[hoveredSquare].title}
+                    {tiles[hoveredSquare].title}
                   </h3>
-                  <p
+                  <div
                     className="text-xl mt-2"
                     style={{
                       color: "#FFCF3F",
                       textShadow: "2px 2px 0px black",
                     }}
                   >
-                    {bingoItems[hoveredSquare].text}
-                  </p>
+                    {tiles[hoveredSquare].text}
+                  </div>
                 </div>
               )
               : (
@@ -539,11 +673,12 @@ const App = () => {
               )}
           </div>
         </div>
-        <div className="flex justify-center mt-6">
+
+        <div className="flex justify-center mt-6 gap-4 flex-wrap">
           <button
             onClick={rollRandomTile}
             disabled={isRolling}
-            className="flex items-center gap-2 font-bold py-2 px-6 mr-4 transition-colors"
+            className="flex items-center gap-2 font-bold py-2 px-6 transition-colors"
             style={{
               backgroundColor: isRolling ? "#666" : "#FF6B35",
               color: "#FFFFFF",
@@ -567,13 +702,63 @@ const App = () => {
               color: "#0F0F0F",
               cursor: "pointer",
             }}
-            onMouseEnter={(e) =>
-              e.target.style.backgroundColor = "#FFCF3F"}
-            onMouseLeave={(e) =>
-              e.target.style.backgroundColor = "#E6A519"}
+            onMouseEnter={(e) => e.target.style.backgroundColor = "#FFCF3F"}
+            onMouseLeave={(e) => e.target.style.backgroundColor = "#E6A519"}
           >
             <Download className="w-5 h-5" />
             Save as Image
+          </button>
+        </div>
+
+        <div className="flex justify-center mt-6 gap-2 items-center">
+          <span style={{ color: "#FFCF3F" }} className="font-bold">
+            Swap Tiles:
+          </span>
+          <input
+            type="number"
+            min="1"
+            max="30"
+            value={swapTile1}
+            onChange={(e) => handleSwapInput(e.target.value, 1)}
+            placeholder="Tile #"
+            className="w-20 px-2 py-1 text-center"
+            style={{
+              backgroundColor: "#46433A",
+              color: "#FFCF3F",
+              border: "2px solid #694D23",
+            }}
+          />
+          <span style={{ color: "#FFCF3F" }}>↔</span>
+          <input
+            type="number"
+            min="1"
+            max="30"
+            value={swapTile2}
+            onChange={(e) => handleSwapInput(e.target.value, 2)}
+            placeholder="Tile #"
+            className="w-20 px-2 py-1 text-center"
+            style={{
+              backgroundColor: "#46433A",
+              color: "#FFCF3F",
+              border: "2px solid #694D23",
+            }}
+          />
+          <button
+            onClick={() => {
+              setSwapTile1("");
+              setSwapTile2("");
+              setTiles(bingoItems);
+            }}
+            className="font-bold py-1 px-4 transition-colors"
+            style={{
+              backgroundColor: "#694D23",
+              color: "#FFCF3F",
+              cursor: "pointer",
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = "#8B6330"}
+            onMouseLeave={(e) => e.target.style.backgroundColor = "#694D23"}
+          >
+            Reset
           </button>
         </div>
       </div>

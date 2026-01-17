@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Download } from "lucide-react";
 import { bingoItems } from "./bingo_items";
+import html2canvas from "html2canvas";
 import "./app.css";
 
 const App = () => {
@@ -41,7 +42,6 @@ const App = () => {
     if (swap1Param) setSwapTile1(swap1Param);
     if (swap2Param) setSwapTile2(swap2Param);
 
-    // Apply swap from URL params
     if (swap1Param && swap2Param) {
       const idx1 = parseInt(swap1Param) - 1;
       const idx2 = parseInt(swap2Param) - 1;
@@ -129,22 +129,15 @@ const App = () => {
       return;
     }
 
-    // Always swap from the base bingoItems array
     const newTiles = [...bingoItems];
     [newTiles[idx1], newTiles[idx2]] = [newTiles[idx2], newTiles[idx1]];
     setTiles(newTiles);
-    console.log(newTiles);
   };
 
   const saveAsImage = async () => {
     if (!gridRef.current) return;
 
     try {
-      // Dynamically import html2canvas
-      const html2canvas =
-        (await import("https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm"))
-          .default;
-
       const canvas = await html2canvas(gridRef.current, {
         backgroundColor: "#0F0F0F",
         scale: 2,
@@ -208,20 +201,20 @@ const App = () => {
 
   return (
     <div className="min-h-screen p-8" style={{ backgroundColor: "#2E2C29" }}>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <h1
           className="text-4xl font-bold text-center mb-2"
           style={{ fontFamily: "serif", color: "#FFCF3F" }}
         >
           Zerk Team Bingo
         </h1>
-        <p className="text-center mb-4" style={{ color: "#00FFFF" }}>
+        <p className="text-center mb-6" style={{ color: "#00FFFF" }}>
           Click squares to mark them complete!
         </p>
 
-        <div className="grid grid-cols-2 gap-3 items-start">
-          <div className="flex gap-1">
-            <div className="flex flex-col gap-3 p-3">
+        <div className="flex flex-col lg:flex-row gap-4 items-start justify-center">
+          <div className="flex gap-2">
+            <div className="flex flex-col gap-1 p-1">
               {[0, 1, 2, 3, 4, 5].map((rowIndex) => {
                 const rowColors = [
                   "linear-gradient(0deg,rgba(156, 28, 32, 1) 0%, rgba(255, 0, 0, 1) 100%)",
@@ -234,22 +227,16 @@ const App = () => {
                 return (
                   <div
                     key={rowIndex}
-                    className="cursor-pointer transition-all"
+                    className="cursor-pointer transition-all flex-1"
                     style={{
-                      width: "10px",
-                      height: "calc((100% - 20px) / 6)",
+                      width: "12px",
+                      minHeight: "60px",
                       background: rowColors[rowIndex],
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexDirection: "column",
                       boxShadow: "3px 3px 0px black",
                     }}
                     onMouseEnter={() => setHoveredSquare(`row-${rowIndex}`)}
-                    onMouseLeave={() =>
-                      setHoveredSquare(null)}
-                  >
-                  </div>
+                    onMouseLeave={() => setHoveredSquare(null)}
+                  />
                 );
               })}
             </div>
@@ -274,6 +261,8 @@ const App = () => {
                     key={index}
                     className="relative aspect-square cursor-pointer transition-all flex items-center justify-center"
                     style={{
+                      width: "100px",
+                      height: "100px",
                       borderWidth: "2px",
                       borderColor: isClicked
                         ? "#E6A519"
@@ -291,10 +280,6 @@ const App = () => {
                         ? "2"
                         : "unset",
                       backgroundColor: "#46433A",
-                      // backgroundImage: "url('" + item.image + "')",
-                      // backgroundSize: "min(60%, 60px) auto",
-                      // backgroundRepeat: "no-repeat",
-                      // backgroundPosition: "center center",
                     }}
                     onClick={() => toggleSquare(index)}
                     onMouseEnter={(e) => {
@@ -315,7 +300,7 @@ const App = () => {
                     }}
                   >
                     <div
-                      className="absolute top-1 left-1 text-s font-bold"
+                      className="absolute top-1 left-1 text-sm font-bold"
                       style={{
                         color: "#FFCF3F",
                         textShadow: "2px 2px 0px black",
@@ -323,7 +308,11 @@ const App = () => {
                     >
                       {item.index}
                     </div>
-                    <img className="tile-icon" src={item.image}></img>
+                    <img
+                      className="tile-icon"
+                      src={item.image}
+                      alt={item.title}
+                    />
                     {isClicked && (
                       <div
                         className="absolute inset-0 flex items-center justify-center"
@@ -341,13 +330,13 @@ const App = () => {
           </div>
 
           <div
-            className="p-6 flex items-center justify-center"
+            className="w-full lg:w-96 p-6 flex items-center justify-center"
             style={{
               backgroundColor: "#46433A",
               borderWidth: "2px",
               borderColor: "#474745",
               borderStyle: "solid",
-              minHeight: "400px",
+              minHeight: "300px",
             }}
           >
             {hoveredSquare !== null
@@ -356,7 +345,7 @@ const App = () => {
                 ? (
                   <div className="text-center">
                     <h3
-                      className="text-3xl font-semibold mb-4"
+                      className="text-2xl font-semibold mb-4"
                       style={{
                         color: "#FFCF3F",
                         textShadow: "2px 2px 0px black",
@@ -368,22 +357,23 @@ const App = () => {
                         "Unique Exchange",
                         "Pet Promotion",
                         "Tile Transfer",
-                        "Double Trouble"
+                        "Double Trouble",
                       ][parseInt(hoveredSquare.split("-")[1])]}
                     </h3>
-                    <div className="space-y-2"
-                    style={{
+                    <div
+                      className="text-base"
+                      style={{
                         color: "#FFCF3F",
                         textShadow: "2px 2px 0px black",
-                        fontSize:'20px'
-                      }}>
+                      }}
+                    >
                       {[
                         "Auto-complete a random one of your remaining tiles",
                         "Validate 1 unique drop in a non-teammates name, as long as the team size is 5 or fewer",
                         "Swap the unique required on a boss drop table",
                         "Use a boss' pet drop in place of its unique drop",
                         "Swap the positions of 2 tiles",
-                        "Validate 1 drop twice, choose to apply it to 2 separate tiles or 1 single tile"
+                        "Validate 1 drop twice, choose to apply it to 2 separate tiles or 1 single tile",
                       ][parseInt(hoveredSquare.split("-")[1])]}
                     </div>
                   </div>
@@ -391,7 +381,7 @@ const App = () => {
                 : (
                   <div className="text-center">
                     <h3
-                      className="text-3xl font-semibold"
+                      className="text-2xl font-semibold mb-2"
                       style={{
                         color: "#FFCF3F",
                         textShadow: "2px 2px 0px black",
@@ -400,7 +390,7 @@ const App = () => {
                       {tiles[hoveredSquare].title}
                     </h3>
                     <div
-                      className="text-xl mt-2"
+                      className="text-lg"
                       style={{
                         color: "#FFCF3F",
                         textShadow: "2px 2px 0px black",
@@ -412,7 +402,7 @@ const App = () => {
                 )
               : (
                 <div
-                  className="text-center italic text-lg"
+                  className="text-center italic text-base"
                   style={{ color: "#00FFFF" }}
                 >
                   Hover over a square to see details
@@ -421,7 +411,7 @@ const App = () => {
           </div>
         </div>
 
-        <div className="flex justify-center mt-6 gap-4 flex-wrap">
+        <div className="flex flex-wrap justify-center mt-6 gap-4">
           <button
             onClick={rollRandomTile}
             disabled={isRolling}
@@ -433,7 +423,9 @@ const App = () => {
               opacity: isRolling ? 0.6 : 1,
             }}
             onMouseEnter={(e) => {
-              if (!isRolling) e.target.style.backgroundColor = "#FF8555";
+              if (!isRolling) {
+                e.target.style.backgroundColor = "#FF8555";
+              }
             }}
             onMouseLeave={(e) => {
               if (!isRolling) e.target.style.backgroundColor = "#FF6B35";
@@ -457,7 +449,7 @@ const App = () => {
           </button>
         </div>
 
-        <div className="flex justify-center mt-6 gap-2 items-center">
+        <div className="flex flex-wrap justify-center mt-6 gap-2 items-center">
           <span style={{ color: "#FFCF3F" }} className="font-bold">
             Swap Tiles:
           </span>

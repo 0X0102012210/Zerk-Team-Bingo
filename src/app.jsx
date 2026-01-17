@@ -219,90 +219,125 @@ const App = () => {
           Click squares to mark them complete!
         </p>
 
-        <div className="grid grid-cols-2 gap-6 items-start">
-          <div
-            ref={gridRef}
-            className="grid grid-cols-5"
-            style={{
-              backgroundColor: "#0F0F0F",
-              borderWidth: "4px",
-              borderColor: "#694D23",
-              borderStyle: "solid",
-              gap: "0.25rem",
-              padding: "0.25rem",
-            }}
-          >
-            {tiles.map((item, index) => {
-              const isClicked = clickedSquares.has(index);
-
-              return (
-                <div
-                  key={index}
-                  className="relative aspect-square cursor-pointer transition-all flex items-center justify-center"
-                  style={{
-                    borderWidth: "2px",
-                    borderColor: isClicked
-                      ? "#E6A519"
-                      : (selectedTile === index)
-                      ? "#FF0000"
-                      : "#474745",
-                    borderStyle: "solid",
-                    boxShadow: (selectedTile === index)
-                      ? "0 0 20px #FF0000"
-                      : "none",
-                    transform: (selectedTile === index && isRolling)
-                      ? "scale(1.1)"
-                      : "scale(1)",
-                    zIndex: (selectedTile === index && isRolling)
-                      ? "2"
-                      : "unset",
-                    backgroundColor: "#46433A",
-                    // backgroundImage: "url('" + item.image + "')",
-                    // backgroundSize: "min(60%, 60px) auto",
-                    // backgroundRepeat: "no-repeat",
-                    // backgroundPosition: "center center",
-                  }}
-                  onClick={() => toggleSquare(index)}
-                  onMouseEnter={(e) => {
-                    if (!isRolling) {
-                      setHoveredSquare(index);
-                      if (!isClicked) {
-                        e.currentTarget.style.borderColor = "#E6A519";
-                      }
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isRolling) {
-                      setHoveredSquare(null);
-                      if (!isClicked) {
-                        e.currentTarget.style.borderColor = "#474745";
-                      }
-                    }
-                  }}
-                >
+        <div className="grid grid-cols-2 gap-3 items-start">
+          <div className="flex gap-1">
+            <div className="flex flex-col gap-3 p-3">
+              {[0, 1, 2, 3, 4, 5].map((rowIndex) => {
+                const rowColors = [
+                  "linear-gradient(0deg,rgba(156, 28, 32, 1) 0%, rgba(255, 0, 0, 1) 100%)",
+                  "linear-gradient(0deg,rgba(241, 90, 36, 1) 0%, rgba(247, 147, 30, 1) 100%)",
+                  "linear-gradient(0deg,rgba(230, 165, 25, 1) 0%, rgba(252, 238, 33, 1) 100%)",
+                  "linear-gradient(0deg,rgba(0, 104, 55, 1) 0%, rgba(0, 255, 0, 1) 100%)",
+                  "linear-gradient(0deg,rgba(0, 113, 188, 1) 0%, rgba(0, 255, 255, 1) 100%)",
+                  "linear-gradient(0deg,rgba(166, 73, 143, 1) 0%, rgba(255, 0, 255, 1) 100%)",
+                ];
+                return (
                   <div
-                    className="absolute top-1 left-1 text-s font-bold"
+                    key={rowIndex}
+                    className="cursor-pointer transition-all"
                     style={{
-                      color: "#FFCF3F",
-                      textShadow: "2px 2px 0px black",
+                      width: "10px",
+                      height: "calc((100% - 20px) / 6)",
+                      background: rowColors[rowIndex],
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexDirection: "column",
+                      boxShadow: "3px 3px 0px black",
+                    }}
+                    onMouseEnter={() => setHoveredSquare(`row-${rowIndex}`)}
+                    onMouseLeave={() =>
+                      setHoveredSquare(null)}
+                  >
+                  </div>
+                );
+              })}
+            </div>
+
+            <div
+              ref={gridRef}
+              className="grid grid-cols-5"
+              style={{
+                backgroundColor: "#0F0F0F",
+                borderWidth: "4px",
+                borderColor: "#694D23",
+                borderStyle: "solid",
+                gap: "0.25rem",
+                padding: "0.25rem",
+              }}
+            >
+              {tiles.map((item, index) => {
+                const isClicked = clickedSquares.has(index);
+
+                return (
+                  <div
+                    key={index}
+                    className="relative aspect-square cursor-pointer transition-all flex items-center justify-center"
+                    style={{
+                      borderWidth: "2px",
+                      borderColor: isClicked
+                        ? "#E6A519"
+                        : (selectedTile === index)
+                        ? "#FF0000"
+                        : "#474745",
+                      borderStyle: "solid",
+                      boxShadow: (selectedTile === index)
+                        ? "0 0 20px #FF0000"
+                        : "none",
+                      transform: (selectedTile === index && isRolling)
+                        ? "scale(1.1)"
+                        : "scale(1)",
+                      zIndex: (selectedTile === index && isRolling)
+                        ? "2"
+                        : "unset",
+                      backgroundColor: "#46433A",
+                      // backgroundImage: "url('" + item.image + "')",
+                      // backgroundSize: "min(60%, 60px) auto",
+                      // backgroundRepeat: "no-repeat",
+                      // backgroundPosition: "center center",
+                    }}
+                    onClick={() => toggleSquare(index)}
+                    onMouseEnter={(e) => {
+                      if (!isRolling) {
+                        setHoveredSquare(index);
+                        if (!isClicked) {
+                          e.currentTarget.style.borderColor = "#E6A519";
+                        }
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isRolling) {
+                        setHoveredSquare(null);
+                        if (!isClicked) {
+                          e.currentTarget.style.borderColor = "#474745";
+                        }
+                      }
                     }}
                   >
-                    {item.index}
-                  </div>
-                  <img className="tile-icon" src={item.image}></img>
-                  {isClicked && (
                     <div
-                      className="absolute inset-0 flex items-center justify-center"
-                      style={{ backgroundColor: "rgba(0, 255, 0, 0.6)" }}
+                      className="absolute top-1 left-1 text-s font-bold"
+                      style={{
+                        color: "#FFCF3F",
+                        textShadow: "2px 2px 0px black",
+                      }}
                     >
-                      <div className="text-4xl" style={{ color: "#0F0F0F" }}>
-                        ✓
-                      </div>
+                      {item.index}
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                    <img className="tile-icon" src={item.image}></img>
+                    {isClicked && (
+                      <div
+                        className="absolute inset-0 flex items-center justify-center"
+                        style={{ backgroundColor: "rgba(0, 255, 0, 0.6)" }}
+                      >
+                        <div className="text-4xl" style={{ color: "#0F0F0F" }}>
+                          ✓
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           <div
@@ -316,28 +351,65 @@ const App = () => {
             }}
           >
             {hoveredSquare !== null
-              ? (
-                <div className="text-center">
-                  <h3
-                    className="text-3xl font-semibold"
+              ? typeof hoveredSquare === "string" &&
+                  hoveredSquare.startsWith("row-")
+                ? (
+                  <div className="text-center">
+                    <h3
+                      className="text-3xl font-semibold mb-4"
+                      style={{
+                        color: "#FFCF3F",
+                        textShadow: "2px 2px 0px black",
+                      }}
+                    >
+                      {[
+                        "Spin to Win",
+                        "Power of Friendship",
+                        "Unique Exchange",
+                        "Pet Promotion",
+                        "Tile Transfer",
+                        "Double Trouble"
+                      ][parseInt(hoveredSquare.split("-")[1])]}
+                    </h3>
+                    <div className="space-y-2"
                     style={{
-                      color: "#FFCF3F",
-                      textShadow: "2px 2px 0px black",
-                    }}
-                  >
-                    {tiles[hoveredSquare].title}
-                  </h3>
-                  <div
-                    className="text-xl mt-2"
-                    style={{
-                      color: "#FFCF3F",
-                      textShadow: "2px 2px 0px black",
-                    }}
-                  >
-                    {tiles[hoveredSquare].text}
+                        color: "#FFCF3F",
+                        textShadow: "2px 2px 0px black",
+                        fontSize:'20px'
+                      }}>
+                      {[
+                        "Auto-complete a random one of your remaining tiles",
+                        "Validate 1 unique drop in a non-teammates name, as long as the team size is 5 or fewer",
+                        "Swap the unique required on a boss drop table",
+                        "Use a boss' pet drop in place of its unique drop",
+                        "Swap the positions of 2 tiles",
+                        "Validate 1 drop twice, choose to apply it to 2 separate tiles or 1 single tile"
+                      ][parseInt(hoveredSquare.split("-")[1])]}
+                    </div>
                   </div>
-                </div>
-              )
+                )
+                : (
+                  <div className="text-center">
+                    <h3
+                      className="text-3xl font-semibold"
+                      style={{
+                        color: "#FFCF3F",
+                        textShadow: "2px 2px 0px black",
+                      }}
+                    >
+                      {tiles[hoveredSquare].title}
+                    </h3>
+                    <div
+                      className="text-xl mt-2"
+                      style={{
+                        color: "#FFCF3F",
+                        textShadow: "2px 2px 0px black",
+                      }}
+                    >
+                      {tiles[hoveredSquare].text}
+                    </div>
+                  </div>
+                )
               : (
                 <div
                   className="text-center italic text-lg"
